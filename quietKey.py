@@ -34,4 +34,4 @@ class quietKey(object):
 
 if __name__ == '__main__':
     qK = quietKey()
-    qK.findOtherHostsByName("minimi")
+    qK.findOtherHostsByName("g5.mason.ch")
