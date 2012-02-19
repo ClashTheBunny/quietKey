@@ -3,10 +3,11 @@
 # a quick bash equivilent of most of the things that need to happen, with some PHP
 #for foo in $(cat known_hosts | awk '{print $1}'); do echo "<?= base64_encode(hash_hmac('sha1', 'localhost', base64_decode('"$(echo $foo | cut -d \| -f 3)"'),TRUE)); echo \"\n\"; ?>" | php; done | xargs -I{} grep {} known_hosts | awk '{print $3}' | xargs -I{} grep {} known_hosts
 
-import os
+import os, sys
 import hmac
 import hashlib
 import binascii
+from twisted.conch.ssh import keys
 
 class quietKey(object):
     """This will help you work with your known_hosts file when it is hashed"""
@@ -29,9 +30,13 @@ class quietKey(object):
             mysha1hmac = hmac.new(binascii.a2b_base64( salt ), hostname, hashlib.sha1)
             if binascii.b2a_base64( mysha1hmac.digest() ).strip() == hashedHost:
                 host = hashedHost
+        print hostname
         print self.hostDict[host]
         print self.hostKeyDict[self.hostDict[host][2]]
+        #print self.hostDict[host][2]
+        myKey = keys.Key.fromString( self.hostDict[host][1] +' ' +self.hostDict[host][2])
+        print myKey.fingerprint()
 
 if __name__ == '__main__':
     qK = quietKey()
-    qK.findOtherHostsByName("g5.mason.ch")
+    qK.findOtherHostsByName(sys.argv[1])
